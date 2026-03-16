@@ -1,6 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+
+
+// import { useState } from "react"
 import Link from "next/link"
 import { Calendar, MapPin, User, Plus, Filter, Search } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -29,83 +32,93 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { StatusBadge } from "@/components/status-badge"
 
-const events = [
-  {
-    id: 1,
-    name: "Hackathon 2026",
-    department: "Computer Science",
-    date: "Mar 20, 2026",
-    venue: "Main Auditorium",
-    coordinator: "Dr. Smith",
-    status: "approved" as const,
-  },
-  {
-    id: 2,
-    name: "Robotics Workshop",
-    department: "Mechanical",
-    date: "Mar 22, 2026",
-    venue: "Lab Complex A",
-    coordinator: "Prof. Johnson",
-    status: "pending" as const,
-  },
-  {
-    id: 3,
-    name: "Tech Quiz Competition",
-    department: "Electronics",
-    date: "Mar 25, 2026",
-    venue: "Seminar Hall 1",
-    coordinator: "Dr. Williams",
-    status: "pending" as const,
-  },
-  {
-    id: 4,
-    name: "AI Symposium",
-    department: "Computer Science",
-    date: "Mar 28, 2026",
-    venue: "Conference Center",
-    coordinator: "Prof. Davis",
-    status: "rejected" as const,
-  },
-  {
-    id: 5,
-    name: "Circuit Design Contest",
-    department: "Electronics",
-    date: "Apr 01, 2026",
-    venue: "ECE Lab 2",
-    coordinator: "Dr. Brown",
-    status: "approved" as const,
-  },
-  {
-    id: 6,
-    name: "Bridge Building Challenge",
-    department: "Civil",
-    date: "Apr 03, 2026",
-    venue: "Open Ground",
-    coordinator: "Prof. Miller",
-    status: "pending" as const,
-  },
-  {
-    id: 7,
-    name: "Coding Marathon",
-    department: "Information Technology",
-    date: "Apr 05, 2026",
-    venue: "IT Lab Complex",
-    coordinator: "Dr. Wilson",
-    status: "approved" as const,
-  },
-  {
-    id: 8,
-    name: "Power Systems Workshop",
-    department: "Electrical",
-    date: "Apr 08, 2026",
-    venue: "EE Block",
-    coordinator: "Prof. Taylor",
-    status: "in-progress" as const,
-  },
-]
+// const events = [
+//   {
+//     id: 1,
+//     name: "Hackathon 2026",
+//     department: "Computer Science",
+//     date: "Mar 20, 2026",
+//     venue: "Main Auditorium",
+//     coordinator: "Dr. Smith",
+//     status: "approved" as const,
+//   },
+//   {
+//     id: 2,
+//     name: "Robotics Workshop",
+//     department: "Mechanical",
+//     date: "Mar 22, 2026",
+//     venue: "Lab Complex A",
+//     coordinator: "Prof. Johnson",
+//     status: "pending" as const,
+//   },
+//   {
+//     id: 3,
+//     name: "Tech Quiz Competition",
+//     department: "Electronics",
+//     date: "Mar 25, 2026",
+//     venue: "Seminar Hall 1",
+//     coordinator: "Dr. Williams",
+//     status: "pending" as const,
+//   },
+//   {
+//     id: 4,
+//     name: "AI Symposium",
+//     department: "Computer Science",
+//     date: "Mar 28, 2026",
+//     venue: "Conference Center",
+//     coordinator: "Prof. Davis",
+//     status: "rejected" as const,
+//   },
+//   {
+//     id: 5,
+//     name: "Circuit Design Contest",
+//     department: "Electronics",
+//     date: "Apr 01, 2026",
+//     venue: "ECE Lab 2",
+//     coordinator: "Dr. Brown",
+//     status: "approved" as const,
+//   },
+//   {
+//     id: 6,
+//     name: "Bridge Building Challenge",
+//     department: "Civil",
+//     date: "Apr 03, 2026",
+//     venue: "Open Ground",
+//     coordinator: "Prof. Miller",
+//     status: "pending" as const,
+//   },
+//   {
+//     id: 7,
+//     name: "Coding Marathon",
+//     department: "Information Technology",
+//     date: "Apr 05, 2026",
+//     venue: "IT Lab Complex",
+//     coordinator: "Dr. Wilson",
+//     status: "approved" as const,
+//   },
+//   {
+//     id: 8,
+//     name: "Power Systems Workshop",
+//     department: "Electrical",
+//     date: "Apr 08, 2026",
+//     venue: "EE Block",
+//     coordinator: "Prof. Taylor",
+//     status: "in-progress" as const,
+//   },
+// ]
+
+
 
 export default function EventsPage() {
   const [viewMode, setViewMode] = useState<"table" | "cards">("table")
+  const [events, setEvents] = useState([])
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/events/")
+      .then((res) => res.json())
+      .then((data) => setEvents(data))
+      .catch((err) => console.error(err))
+  }, [])
 
   return (
     <div className="space-y-6">
