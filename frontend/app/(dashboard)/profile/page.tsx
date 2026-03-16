@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   User,
   Mail,
@@ -26,16 +26,16 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const userData = {
-  name: "John Doe",
-  email: "john.doe@university.edu",
-  role: "Student Coordinator",
-  department: "Computer Science",
-  phone: "+91 98765 43210",
-  studentId: "CS2024001",
-  initials: "JD",
-  joinedDate: "August 2024",
-}
+// const userData = {
+//   name: "John Doe",
+//   email: "john.doe@university.edu",
+//   role: "Student Coordinator",
+//   department: "Computer Science",
+//   phone: "+91 98765 43210",
+//   studentId: "CS2024001",
+//   initials: "JD",
+//   joinedDate: "August 2024",
+// }
 
 const activityStats = [
   { label: "Events Organized", value: 5 },
@@ -44,8 +44,36 @@ const activityStats = [
 ]
 
 export default function ProfilePage() {
+  const [userData, setUserData] = useState<any>(null)
+  const [formData, setFormData] = useState<any>(null)
   const [isEditing, setIsEditing] = useState(false)
-  const [formData, setFormData] = useState(userData)
+
+  useEffect(() => {
+
+    const token = localStorage.getItem("token")
+
+    fetch("http://127.0.0.1:8000/api/profile/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+
+        const user = {
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          department: data.department,
+          initials: data.name?.slice(0,2).toUpperCase()
+        }
+
+        setUserData(user)
+        setFormData(user)
+
+      })
+
+  }, [])
 
   const handleSave = () => {
     // Handle save logic here
@@ -56,6 +84,10 @@ export default function ProfilePage() {
     setFormData(userData)
     setIsEditing(false)
   }
+
+  if (!userData) {
+  return <div className="p-6">Loading profile...</div>
+}
 
   return (
     <div className="space-y-6">

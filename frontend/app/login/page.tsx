@@ -15,14 +15,29 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
+
+
+// const roles = [
+//   { value: "student-coordinator", label: "Student Coordinator" },
+//   { value: "vice-coordinator", label: "Vice Coordinator" },
+//   { value: "volunteer", label: "Volunteer" },
+//   { value: "event-coordinator", label: "Event Coordinator (Faculty)" },
+//   { value: "department-coordinator", label: "Department Coordinator (Faculty)" },
+//   { value: "department-techfest-head", label: "Department Techfest Head" },
+//   { value: "overall-techfest-head", label: "Overall Techfest Head" },
+//   { value: "hod", label: "HOD" },
+// ]
+
+
 const roles = [
-  { value: "student-coordinator", label: "Student Coordinator" },
-  { value: "vice-coordinator", label: "Vice Coordinator" },
+  { value: "faculty", label: "Faculty Coordinator" },
+  { value: "student_coord", label: "Student Coordinator" },
+  { value: "sub_coord", label: "Sub Coordinator" },
   { value: "volunteer", label: "Volunteer" },
-  { value: "event-coordinator", label: "Event Coordinator (Faculty)" },
-  { value: "department-coordinator", label: "Department Coordinator (Faculty)" },
-  { value: "department-techfest-head", label: "Department Techfest Head" },
-  { value: "overall-techfest-head", label: "Overall Techfest Head" },
+  { value: "lab_staff", label: "Lab Staff" },
+  { value: "electric_staff", label: "Electric Staff" },
+  { value: "treasurer", label: "Treasurer" },
+  { value: "dept_head", label: "Department Techfest Head" },
   { value: "hod", label: "HOD" },
 ]
 
@@ -30,15 +45,60 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    // Simulate loading
-    setTimeout(() => {
-      setIsLoading(false)
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [role, setRole] = useState("")
+
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   setIsLoading(true)
+  //   // Simulate loading
+  //   setTimeout(() => {
+  //     setIsLoading(false)
+  //     window.location.href = "/dashboard"
+  //   }, 1500)
+  // }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setIsLoading(true)
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/api/login/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        role: role,
+      }),
+    })
+
+    const data = await res.json()
+
+    if (res.ok) {
+
+      // Save JWT token
+      localStorage.setItem("token", data.access)
+
+      // Save user role
+      localStorage.setItem("role", data.role)
+
       window.location.href = "/dashboard"
-    }, 1500)
+
+    } else {
+      alert(data.error || "Login failed")
+    }
+
+  } catch (error) {
+    console.error(error)
+    alert("Server error")
   }
+
+  setIsLoading(false)
+}
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background px-4 py-12">
@@ -76,9 +136,13 @@ export default function LoginPage() {
                   type="text"
                   placeholder="Enter your email or username"
                   className="h-11"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
               </div>
+
+              
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -88,6 +152,8 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     className="h-11 pr-10"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                   <button
@@ -109,7 +175,7 @@ export default function LoginPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="role">Select Role</Label>
-                <Select required>
+                <Select onValueChange={(value) => setRole(value)} required>
                   <SelectTrigger id="role" className="h-11">
                     <SelectValue placeholder="Choose your role" />
                   </SelectTrigger>
