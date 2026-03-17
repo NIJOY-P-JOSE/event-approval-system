@@ -59,12 +59,13 @@ export default function LoginPage() {
   //   }, 1500)
   // }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+
+const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()
   setIsLoading(true)
 
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/login/", {
+    const res = await fetch("http://127.0.0.1:8000/api/users/login/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -76,18 +77,24 @@ export default function LoginPage() {
       }),
     })
 
-    const data = await res.json()
+    const text = await res.text()   // 🔥 read as text first
+    console.log("RAW RESPONSE:", text)
+
+    let data
+    try {
+      data = JSON.parse(text)
+    } catch {
+      console.error("Not JSON response")
+      alert("Server error (not JSON)")
+      setIsLoading(false)
+      return
+    }
 
     if (res.ok) {
-
-      // Save JWT token
       localStorage.setItem("token", data.access)
-
-      // Save user role
       localStorage.setItem("role", data.role)
 
       window.location.href = "/dashboard"
-
     } else {
       alert(data.error || "Login failed")
     }

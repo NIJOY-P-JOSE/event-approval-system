@@ -111,14 +111,30 @@ import { StatusBadge } from "@/components/status-badge"
 
 export default function EventsPage() {
   const [viewMode, setViewMode] = useState<"table" | "cards">("table")
-  const [events, setEvents] = useState([])
+  const [events, setEvents] = useState<any[]>([])
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/events/")
-      .then((res) => res.json())
-      .then((data) => setEvents(data))
-      .catch((err) => console.error(err))
-  }, [])
+
+  const token = localStorage.getItem("token")
+
+  fetch("http://127.0.0.1:8000/api/events/", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (Array.isArray(data)) {
+        setEvents(data)
+      } else {
+        console.error("API error:", data)
+        setEvents([])
+      }
+    })
+    .catch((err) => console.error(err))
+
+}, [])
 
   return (
     <div className="space-y-6">
@@ -129,9 +145,11 @@ export default function EventsPage() {
             Manage and track all techfest events
           </p>
         </div>
-        <Button className="gap-2">
-          <Plus className="h-4 w-4" />
-          Create Event
+        <Button className="gap-2" asChild>
+          <Link href="/events/create">
+            <Plus className="h-4 w-4" />
+            Create Event
+          </Link>
         </Button>
       </div>
 

@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 
+
 @api_view(["POST"])
 def login(request):
 
@@ -47,3 +48,19 @@ def profile(request):
         "email": user.email,
         "department": user.department
     })
+
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def faculty_list(request):
+    faculty = User.objects.filter(role="faculty")
+    data = [
+        {
+            "id": f.id,
+            "name": f.username
+        }
+        for f in faculty
+    ]
+    return Response(data)
+

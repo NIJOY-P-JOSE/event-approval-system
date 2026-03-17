@@ -1,14 +1,18 @@
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
-type Status = "pending" | "approved" | "rejected" | "in-progress"
-
+type Status = "draft" | "pending" | "approved" | "rejected" | "in-progress"
 interface StatusBadgeProps {
   status: Status
   className?: string
 }
 
 const statusConfig: Record<Status, { label: string; className: string }> = {
+  draft: {
+    label: "Draft",
+    className:
+      "bg-muted text-muted-foreground border-muted hover:bg-muted/80",
+  },
   pending: {
     label: "Pending",
     className: "bg-warning/10 text-warning-foreground border-warning/30 hover:bg-warning/20",
@@ -27,9 +31,12 @@ const statusConfig: Record<Status, { label: string; className: string }> = {
   },
 }
 
+
+
+
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const config = statusConfig[status]
-  
+  const config = statusConfig[status] ?? statusConfig["draft"]
+
   return (
     <Badge
       variant="outline"

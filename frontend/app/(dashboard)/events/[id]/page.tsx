@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect, useState } from "react"
+
 import Link from "next/link"
 import {
   ArrowLeft,
@@ -20,72 +22,97 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { StatusBadge } from "@/components/status-badge"
 
-const eventData = {
-  id: 1,
-  name: "Hackathon 2026",
-  department: "Computer Science",
-  date: "March 20, 2026",
-  time: "9:00 AM - 9:00 PM",
-  venue: "Main Auditorium",
-  status: "approved" as const,
-  description:
-    "Annual 24-hour hackathon event featuring innovation challenges, workshops, and networking opportunities. Teams of 2-4 members will compete to build innovative solutions to real-world problems. Prizes worth $10,000 for top 3 teams.",
-  team: {
-    facultyCoordinator: {
-      name: "Dr. Smith",
-      email: "smith@university.edu",
-      initials: "DS",
-    },
-    studentCoordinator: {
-      name: "John Doe",
-      email: "john.doe@student.edu",
-      initials: "JD",
-    },
-    viceCoordinator: {
-      name: "Jane Smith",
-      email: "jane.smith@student.edu",
-      initials: "JS",
-    },
-    volunteers: [
-      { name: "Mike Johnson", initials: "MJ" },
-      { name: "Sarah Wilson", initials: "SW" },
-      { name: "Tom Brown", initials: "TB" },
-      { name: "Emily Davis", initials: "ED" },
-    ],
-  },
-  approvalSteps: [
-    {
-      step: 1,
-      title: "Event Created",
-      description: "Event request submitted",
-      status: "completed",
-      date: "Mar 10, 2026",
-    },
-    {
-      step: 2,
-      title: "Department Approval",
-      description: "Approved by Department Coordinator",
-      status: "completed",
-      date: "Mar 12, 2026",
-    },
-    {
-      step: 3,
-      title: "Techfest Head Approval",
-      description: "Approved by Overall Techfest Head",
-      status: "completed",
-      date: "Mar 14, 2026",
-    },
-    {
-      step: 4,
-      title: "Final Approval",
-      description: "Approved by HOD",
-      status: "completed",
-      date: "Mar 15, 2026",
-    },
-  ],
+// const eventData = {
+//   id: 1,
+//   name: "Hackathon 2026",
+//   department: "Computer Science",
+//   date: "March 20, 2026",
+//   time: "9:00 AM - 9:00 PM",
+//   venue: "Main Auditorium",
+//   status: "approved" as const,
+//   description:
+//     "Annual 24-hour hackathon event featuring innovation challenges, workshops, and networking opportunities. Teams of 2-4 members will compete to build innovative solutions to real-world problems. Prizes worth $10,000 for top 3 teams.",
+//   team: {
+//     facultyCoordinator: {
+//       name: "Dr. Smith",
+//       email: "smith@university.edu",
+//       initials: "DS",
+//     },
+//     studentCoordinator: {
+//       name: "John Doe",
+//       email: "john.doe@student.edu",
+//       initials: "JD",
+//     },
+//     viceCoordinator: {
+//       name: "Jane Smith",
+//       email: "jane.smith@student.edu",
+//       initials: "JS",
+//     },
+//     volunteers: [
+//       { name: "Mike Johnson", initials: "MJ" },
+//       { name: "Sarah Wilson", initials: "SW" },
+//       { name: "Tom Brown", initials: "TB" },
+//       { name: "Emily Davis", initials: "ED" },
+//     ],
+//   },
+//   approvalSteps: [
+//     {
+//       step: 1,
+//       title: "Event Created",
+//       description: "Event request submitted",
+//       status: "completed",
+//       date: "Mar 10, 2026",
+//     },
+//     {
+//       step: 2,
+//       title: "Department Approval",
+//       description: "Approved by Department Coordinator",
+//       status: "completed",
+//       date: "Mar 12, 2026",
+//     },
+//     {
+//       step: 3,
+//       title: "Techfest Head Approval",
+//       description: "Approved by Overall Techfest Head",
+//       status: "completed",
+//       date: "Mar 14, 2026",
+//     },
+//     {
+//       step: 4,
+//       title: "Final Approval",
+//       description: "Approved by HOD",
+//       status: "completed",
+//       date: "Mar 15, 2026",
+//     },
+//   ],
+// }
+
+export default function EventDetailsPage({ params }: { params: { id: string } }){
+
+  const [eventData, setEventData] = useState<any>(null)
+
+  useEffect(() => {
+
+  const fetchEvent = async () => {
+
+    const response = await fetch(
+      `http://127.0.0.1:8000/api/events/${params.id}/`
+    )
+
+    const data = await response.json()
+
+    setEventData(data)
+
+  }
+
+  fetchEvent()
+
+}, [params.id])
+
+if (!eventData) {
+  return <div>Loading event...</div>
 }
 
-export default function EventDetailsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
